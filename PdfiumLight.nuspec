@@ -42,7 +42,10 @@
         <!-- Tags appear in the gallery and can be used for tag searches -->
         <tags>pdf pdfium pdfrenderer</tags>
 
-
+        <dependencies>
+          <dependency id="PdfiumViewer.Native.x86.v8-xfa" version="2018.4.8.256" />
+          <dependency id="PdfiumViewer.Native.x86_64.v8-xfa" version="2018.4.8.256" />
+        </dependencies>
     </metadata>
 
 
