@@ -16,7 +16,7 @@ namespace PdfiumLight
 
             if (!TryLoadNativeLibrary(AppDomain.CurrentDomain.RelativeSearchPath))
             {
-                TryLoadNativeLibrary(Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location));
+                TryLoadNativeLibrary(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
 
@@ -26,7 +26,7 @@ namespace PdfiumLight
                 return false;
 
             path = Path.Combine(path, IntPtr.Size == 4 ? "x86" : "x64");
-            path = Path.Combine(path, "Pdfium.dll");
+            path = Path.Combine(path, "pdfium.dll");
 
             return File.Exists(path) && LoadLibrary(path) != IntPtr.Zero;
         }
