@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -347,6 +348,110 @@ namespace PdfiumLight
 
                 _disposed = true;
             }
+        }
+
+        /// ------>
+        /// From PdfiumViewer for printing purposes
+        /// ------>
+
+        /// <summary>
+        /// Creates a <see cref="PrintDocument"/> for the PDF document.
+        /// </summary>
+        /// <returns></returns>
+        public PrintDocument CreatePrintDocument()
+        {
+            return CreatePrintDocument(PdfPrintMode.CutMargin);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="PrintDocument"/> for the PDF document.
+        /// </summary>
+        /// <param name="printMode">Specifies the mode for printing. The default
+        /// value for this parameter is CutMargin.</param>
+        /// <returns></returns>
+        public PrintDocument CreatePrintDocument(PdfPrintMode printMode)
+        {
+            return CreatePrintDocument(new PdfPrintSettings(printMode, null));
+        }
+
+        /// <summary>
+        /// Creates a <see cref="PrintDocument"/> for the PDF document.
+        /// </summary>
+        /// <param name="settings">The settings used to configure the print document.</param>
+        /// <returns></returns>
+        public PrintDocument CreatePrintDocument(PdfPrintSettings settings)
+        {
+            return new PdfPrintDocument(this, settings);
+        }
+
+        /// <summary>
+        /// Renders a page of the PDF document to the provided graphics instance.
+        /// </summary>
+        /// <param name="page">Number of the page to render.</param>
+        /// <param name="graphics">Graphics instance to render the page on.</param>
+        /// <param name="dpiX">Horizontal DPI.</param>
+        /// <param name="dpiY">Vertical DPI.</param>
+        /// <param name="bounds">Bounds to render the page in.</param>
+        /// <param name="flags">Flags used to influence the rendering.</param>
+        public void Render(int page, Graphics graphics, float dpiX, float dpiY, Rectangle bounds, PdfRenderFlags flags)
+        {
+            if (graphics == null)
+                throw new ArgumentNullException("graphics");
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            float graphicsDpiX = graphics.DpiX;
+            float graphicsDpiY = graphics.DpiY;
+
+            var dc = graphics.GetHdc();
+
+            try
+            {
+                if ((int)graphicsDpiX != (int)dpiX || (int)graphicsDpiY != (int)dpiY)
+                {
+                    var transform = new NativeMethods.XFORM
+                    {
+                        eM11 = graphicsDpiX / dpiX,
+                        eM22 = graphicsDpiY / dpiY
+                    };
+
+                    NativeMethods.SetGraphicsMode(dc, NativeMethods.GM_ADVANCED);
+                    NativeMethods.ModifyWorldTransform(dc, ref transform, NativeMethods.MWT_LEFTMULTIPLY);
+                }
+
+                var point = new NativeMethods.POINT();
+                NativeMethods.SetViewportOrgEx(dc, bounds.X, bounds.Y, out point);
+
+                bool success = RenderPDFPageToDC(
+                    page,
+                    dc,
+                    (int)dpiX, (int)dpiY,
+                    0, 0, bounds.Width, bounds.Height,
+                    FlagsToFPDFFlags(flags)
+                );
+
+                NativeMethods.SetViewportOrgEx(dc, point.X, point.Y, out point);
+
+                if (!success)
+                    throw new Exception();
+            }
+            finally
+            {
+                graphics.ReleaseHdc(dc);
+            }
+        }
+
+        public bool RenderPDFPageToDC(int pageNumber, IntPtr dc, int dpiX, int dpiY, int boundsOriginX, int boundsOriginY, int boundsWidth, int boundsHeight, NativeMethods.FPDF flags)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            using (var pageData = new PageData(_document, _form, pageNumber))
+            {
+                NativeMethods.FPDF_RenderPage(dc, pageData.Page, boundsOriginX, boundsOriginY, boundsWidth, boundsHeight, 0, flags);
+            }
+
+            return true;
         }
     }
 }
