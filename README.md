@@ -1,3 +1,13 @@
+## Forked version notes:
+
+- Adds functionality from PdfiumViewer for printing purposes.
+    - Transform PDF to print document with `document.CreatePrintDocument()`
+- Target framework changed for usage project purposes.
+
+---
+##### Original README:
+---
+
 # PdfiumLight
 A lightweight C# Library to render PDFs with Google's Pdfium in .NET Apps. This is basically a much slimmer version of [Pieter van Ginkel's PdfiumViewer](https://github.com/pvginkel/PdfiumViewer) with some added functionality. 
 
