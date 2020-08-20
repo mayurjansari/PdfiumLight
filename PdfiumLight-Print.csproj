@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <AssemblyName>PdfiumLight</AssemblyName>
+    <AssemblyName>PdfiumLight-Print</AssemblyName>
     <RootNamespace>PdfiumLight</RootNamespace>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
