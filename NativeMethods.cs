@@ -16,7 +16,7 @@ namespace PdfiumLight
 
             if (!TryLoadNativeLibrary(AppDomain.CurrentDomain.RelativeSearchPath))
             {
-                TryLoadNativeLibrary(Path.GetDirectoryName(typeof(NativeMethods).Assembly.Location));
+                TryLoadNativeLibrary(AppDomain.CurrentDomain.BaseDirectory);
             }
         }
 
@@ -26,7 +26,7 @@ namespace PdfiumLight
                 return false;
 
             path = Path.Combine(path, IntPtr.Size == 4 ? "x86" : "x64");
-            path = Path.Combine(path, "Pdfium.dll");
+            path = Path.Combine(path, "pdfium.dll");
 
             return File.Exists(path) && LoadLibrary(path) != IntPtr.Zero;
         }
@@ -99,5 +99,41 @@ namespace PdfiumLight
                 return UnmapViewOfFile(handle);
             }
         }
+
+
+        /// ------>
+        /// From PdfiumViewer for printing purposes
+        /// ------>
+
+        public const int GM_ADVANCED = 2;
+
+        [DllImport("gdi32.dll")]
+        public static extern int SetGraphicsMode(IntPtr hdc, int iMode);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct XFORM
+        {
+            public float eM11;
+            public float eM12;
+            public float eM21;
+            public float eM22;
+            public float eDx;
+            public float eDy;
+        }
+
+        public const uint MWT_LEFTMULTIPLY = 2;
+
+        [DllImport("gdi32.dll")]
+        public static extern bool ModifyWorldTransform(IntPtr hdc, [In] ref XFORM lpXform, uint iMode);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
+        [DllImport("gdi32.dll")]
+        public static extern bool SetViewportOrgEx(IntPtr hdc, int X, int Y, out POINT lpPoint);
     }
 }
