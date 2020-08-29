@@ -68,5 +68,28 @@ namespace PdfiumLight
             using (MemoryStream ms = new MemoryStream(Pdf))
                 return GetImages(ms, password, dpi);
         }
+
+        public static int MoveIndex(this IEnumerable<Image> list, int index, int direction)
+        {
+            if (list == null || list.Count() < index)
+                return index;
+
+            int newIndex = index + direction;
+
+            if (newIndex < 0 || newIndex >= list.Count())
+                return 0; 
+
+            return newIndex;
+        }
+
+        public static int Next(this IEnumerable<Image> list, int index)
+        {
+            return MoveIndex(list, index, 1);
+        }
+
+        public static int Previous(this IEnumerable<Image> list, int index)
+        {
+            return MoveIndex(list, index, -1);
+        }
     }
 }
