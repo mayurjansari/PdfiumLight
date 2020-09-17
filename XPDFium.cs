@@ -16,9 +16,7 @@ namespace PdfiumLight
             for (int i = 0; i < doc.PageCount(); i++)
             {
                 PdfPage page = doc.GetPage(i);
-                int width = (int)Math.Round(page.Width * dpi / 72f);
-                int height = (int)Math.Round(page.Height * dpi / 72f);
-                images.Add(page.Render(width, height));
+                images.Add(page.GetImage(dpi));
             }
             return images;
         }
@@ -26,12 +24,10 @@ namespace PdfiumLight
         public static Image GetImage(this PdfDocument doc, int dpi = 300, int pageNumber = 0)
         {
             PdfPage page = doc.GetPage(pageNumber);
-            int width = (int)Math.Round(page.Width * dpi / 72f);
-            int height = (int)Math.Round(page.Height * dpi / 72f);
-            return page.Render(width, height);
+            return page.GetImage(dpi);
         }
 
-        public static Image GetImage(this PdfPage page, int dpi = 300, int pageNumber = 0)
+        public static Image GetImage(this PdfPage page, int dpi = 300)
         {
             int width = (int)Math.Round(page.Width * dpi / 72f);
             int height = (int)Math.Round(page.Height * dpi / 72f);
