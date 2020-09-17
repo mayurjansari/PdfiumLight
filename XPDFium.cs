@@ -10,34 +10,6 @@ namespace PdfiumLight
 {
     public static class XPDFium
     {
-
-        public static Image GetImage(this PdfDocument doc, int dpi = 300, int pageNumber = 0)
-        {
-            PdfPage page = doc.GetPage(pageNumber);
-            int width = (int)Math.Round(page.Width * dpi / 72f);
-            int height = (int)Math.Round(page.Height * dpi / 72f);
-            return page.Render(width, height);
-        }
-
-        public static Image GetImage(string Pdf, string password = null, int dpi = 300, int pageNumber = 0)
-        {
-            using (PdfDocument doc = new PdfDocument(Pdf, password))
-                return GetImage(doc, dpi, pageNumber);
-        }
-
-
-        public static Image GetImage(Stream Pdf, string password = null, int dpi = 300, int pageNumber = 0)
-        {
-            using (PdfDocument doc = new PdfDocument(Pdf, password))
-                return GetImage(doc, dpi, pageNumber);
-        }
-
-        public static Image GetImage(byte[] Pdf, string password = null, int dpi = 300, int pageNumber = 0)
-        {
-            using (MemoryStream ms = new MemoryStream(Pdf))
-                return GetImage(ms, password, dpi, pageNumber);
-        }
-
         public static IEnumerable<Image> GetImages(this PdfDocument doc, int dpi = 300)
         {
             var images = new List<Image>();
@@ -49,6 +21,39 @@ namespace PdfiumLight
                 images.Add(page.Render(width, height));
             }
             return images;
+        }
+
+        public static Image GetImage(this PdfDocument doc, int dpi = 300, int pageNumber = 0)
+        {
+            PdfPage page = doc.GetPage(pageNumber);
+            int width = (int)Math.Round(page.Width * dpi / 72f);
+            int height = (int)Math.Round(page.Height * dpi / 72f);
+            return page.Render(width, height);
+        }
+
+        public static Image GetImage(this PdfPage page, int dpi = 300, int pageNumber = 0)
+        {
+            int width = (int)Math.Round(page.Width * dpi / 72f);
+            int height = (int)Math.Round(page.Height * dpi / 72f);
+            return page.Render(width, height);
+        }
+
+        public static Image GetImage(string Pdf, string password = null, int dpi = 300, int pageNumber = 0)
+        {
+            using (PdfDocument doc = new PdfDocument(Pdf, password))
+                return GetImage(doc, dpi, pageNumber);
+        }
+
+        public static Image GetImage(Stream Pdf, string password = null, int dpi = 300, int pageNumber = 0)
+        {
+            using (PdfDocument doc = new PdfDocument(Pdf, password))
+                return GetImage(doc, dpi, pageNumber);
+        }
+
+        public static Image GetImage(byte[] Pdf, string password = null, int dpi = 300, int pageNumber = 0)
+        {
+            using (MemoryStream ms = new MemoryStream(Pdf))
+                return GetImage(ms, password, dpi, pageNumber);
         }
 
         public static IEnumerable<Image> GetImages(string Pdf, string password = null, int dpi = 300)
@@ -77,7 +82,7 @@ namespace PdfiumLight
             int newIndex = index + direction;
 
             if (newIndex < 0 || newIndex >= list.Count())
-                return 0; 
+                return 0;
 
             return newIndex;
         }
