@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PdfiumLight
 {
-    public static class XPDFium
+    public static class XPdfImage
     {
         public static IEnumerable<Image> GetImages(this PdfDocument doc, int dpi = 300)
         {
